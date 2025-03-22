@@ -1,0 +1,43 @@
+
+**.subckt DC_NFET1v8
+XM1 VDS VGS GND GND sky130_fd_pr__nfet_01v8 L=0.25 W=2 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29' pd='2*int((nf+1)/2) * (W/nf + 0.29)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+VD VDS GND 2
+VG VGS GND 2
+**** begin user architecture code
+
+.lib /usr/local/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt
+
+
+.save all
+.save i(vd)
+.save @m.xm1.msky130_fd_pr__nfet_01v8[gm]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[id]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[vth]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[gds]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[cgg]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[cgs]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[cbg]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[cdd]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[cds]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[cgd]
+.save @m.xm1.msky130_fd_pr__nfet_01v8[gm]
+
+.option filetype=ascii
+
+
+.control
+    dc VG 0 2 0.01 VD 0.1 1 0.1
+    let gm = @m.xm1.msky130_fd_pr__nfet_01v8[gm]
+    let idbyw = @m.xm1.msky130_fd_pr__nfet_01v8[id]/2
+    let gmbyid = @m.xm1.msky130_fd_pr__nfet_01v8[gm]/@m.xm1.msky130_fd_pr__nfet_01v8[id]
+    let gmbygds = @m.xm1.msky130_fd_pr__nfet_01v8[gm]/@m.xm1.msky130_fd_pr__nfet_01v8[gds]
+    let ft = @m.xm1.msky130_fd_pr__nfet_01v8[gm]/@m.xm1.msky130_fd_pr__nfet_01v8[cgg]
+    let cgg = @m.xm1.msky130_fd_pr__nfet_01v8[cgg]
+    let gds = @m.xm1.msky130_fd_pr__nfet_01v8[gds]
+    let Voverdrive = v(vgs)-@m.xm1.msky130_fd_pr__nfet_01v8[vth]
+    wrdata /home/anilk/SKYWATER130_GMID/NMOS/nmos_data/gmid_nmos_output.txt gm idbyw gmbyid gmbygds ft cgg gds Voverdrive
+    quit
+.endc
+
+.end
